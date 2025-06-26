@@ -198,8 +198,6 @@
 )]
 #![doc = include_str!("../README.md")]
 
-#[cfg(target_os = "linux")]
-use libc::pid_t;
 #[cfg(doc)]
 use std::panic::UnwindSafe;
 use std::{
@@ -210,6 +208,9 @@ use std::{
     panic::RefUnwindSafe,
     ptr,
 };
+
+#[cfg(target_os = "linux")]
+use libc::pid_t;
 
 // === Things which are not part of the main hwloc documentation
 
@@ -251,7 +252,7 @@ pub type hwloc_thread_t = windows_sys::Win32::Foundation::HANDLE;
 /// Process identifier (OS-specific)
 ///
 /// This is `u32` on Windows and `libc::pid_t` on all other platforms.
-#[cfg(target_os = "windows")]
+#[cfg(any(target_os = "windows", target_os = "twizzler"))]
 #[cfg_attr(docsrs, doc(cfg(all())))]
 pub type hwloc_pid_t = u32;
 
@@ -260,7 +261,7 @@ pub type hwloc_pid_t = u32;
 /// This is `HANDLE` on Windows and `libc::pthread_t` on most other platforms,
 /// except on musl where it must be hardcoded to `c_ulong` to [preserve
 /// sanity](https://elixir.bootlin.com/musl/v1.2.4/source/include/alltypes.h.in#L53)
-#[cfg(not(any(target_os = "windows", target_env = "musl")))]
+#[cfg(not(any(target_os = "windows", target_env = "musl", target_os = "twizzler")))]
 #[cfg_attr(docsrs, doc(cfg(all())))]
 pub type hwloc_thread_t = libc::pthread_t;
 
@@ -269,14 +270,14 @@ pub type hwloc_thread_t = libc::pthread_t;
 /// This is `HANDLE` on Windows and `libc::pthread_t` on most other platforms,
 /// except on musl where it must be hardcoded to `c_ulong` to [preserve
 /// sanity](https://elixir.bootlin.com/musl/v1.2.4/source/include/alltypes.h.in#L53)
-#[cfg(target_env = "musl")]
+#[cfg(any(target_env = "musl", target_os = "twizzler"))]
 #[cfg_attr(docsrs, doc(cfg(all())))]
 pub type hwloc_thread_t = c_ulong;
 
 /// Process identifier (OS-specific)
 ///
 /// This is `u32` on Windows and `libc::pid_t` on all other platforms.
-#[cfg(not(target_os = "windows"))]
+#[cfg(not(any(target_os = "windows", target_os = "twizzler")))]
 #[cfg_attr(docsrs, doc(cfg(all())))]
 pub type hwloc_pid_t = libc::pid_t;
 
@@ -732,7 +733,6 @@ pub struct hwloc_obj {
     /// physically contained in this object or containing it and known how
     /// (the children path between this object and the NUMA node objects). In
     /// the end, these nodes are those that are close to the current object.
-    ///
     #[cfg_attr(
         feature = "hwloc-2_3_0",
         doc = "With hwloc 2.3+, [`hwloc_get_local_numanode_objs()`] may be used to"
@@ -1118,12 +1118,11 @@ pub struct hwloc_info_s {
 /// The only exception to this rule is [`RefUnwindSafe`], which is special
 /// because...
 ///
-/// - You cannot implement [`UnwindSafe`] yourself for standard pointer types
-///   due to orphan rules
-/// - Rust implements it for pointers to [`RefUnwindSafe`], i.e. it assumes you
-///   use pointers to such data responsibly.
-/// - The ergonomic impact of everyday types not being [`UnwindSafe`] is
-///   annoying (need [`AssertUnwindSafe`] in every [`catch_unwind()`]).
+/// - You cannot implement [`UnwindSafe`] yourself for standard pointer types due to orphan rules
+/// - Rust implements it for pointers to [`RefUnwindSafe`], i.e. it assumes you use pointers to such
+///   data responsibly.
+/// - The ergonomic impact of everyday types not being [`UnwindSafe`] is annoying (need
+///   [`AssertUnwindSafe`] in every [`catch_unwind()`]).
 ///
 /// [`AssertUnwindSafe`]: std::panic::AssertUnwindSafe
 /// [`catch_unwind()`]: std::panic::catch_unwind()
@@ -1445,7 +1444,6 @@ pub type hwloc_topology_flags_e = c_ulong;
 /// If the current topology is exported to XML and reimported later,
 /// this flag should be set again in the reimported topology so that
 /// disallowed resources are reimported as well.
-///
 #[cfg_attr(
     feature = "hwloc-2_1_0",
     doc = "What additional objects could be detected with this flag depends on"
@@ -1775,8 +1773,7 @@ pub struct hwloc_topology_misc_support {
 /// By default...
 ///
 /// - Most objects are kept ([`HWLOC_TYPE_FILTER_KEEP_ALL`])
-/// - Instruction caches, I/O and Misc objects are ignored (
-///   [`HWLOC_TYPE_FILTER_KEEP_NONE`]).
+/// - Instruction caches, I/O and Misc objects are ignored ( [`HWLOC_TYPE_FILTER_KEEP_NONE`]).
 /// - Die and Group levels are ignored unless they bring structure (
 ///   [`HWLOC_TYPE_FILTER_KEEP_STRUCTURE`]).
 ///
@@ -1919,12 +1916,11 @@ pub const HWLOC_DISTRIB_FLAG_REVERSE: hwloc_distrib_flags_e = 1 << 0;
 /// The only exception to this rule is [`RefUnwindSafe`], which is special
 /// because...
 ///
-/// - You cannot implement [`UnwindSafe`] yourself for standard pointer types
-///   due to orphan rules
-/// - Rust implements it for pointers to [`RefUnwindSafe`], i.e. it assumes you
-///   use pointers to such data responsibly.
-/// - The ergonomic impact of everyday types not being [`UnwindSafe`] is
-///   annoying (need [`AssertUnwindSafe`] in every [`catch_unwind()`]).
+/// - You cannot implement [`UnwindSafe`] yourself for standard pointer types due to orphan rules
+/// - Rust implements it for pointers to [`RefUnwindSafe`], i.e. it assumes you use pointers to such
+///   data responsibly.
+/// - The ergonomic impact of everyday types not being [`UnwindSafe`] is annoying (need
+///   [`AssertUnwindSafe`] in every [`catch_unwind()`]).
 ///
 /// [`AssertUnwindSafe`]: std::panic::AssertUnwindSafe
 /// [`catch_unwind()`]: std::panic::catch_unwind()
@@ -2110,7 +2106,6 @@ pub use distances_transform::*;
 /// Pointers `objs` and `values` should not be replaced, reallocated, freed, etc.
 /// However callers are allowed to modify `kind` as well as the contents of `objs`
 /// and `values` arrays.
-///
 #[cfg_attr(
     feature = "hwloc-2_5_0",
     doc = "For instance, on hwloc 2.5+, if there is a single NUMA node per Package,"
@@ -2394,25 +2389,21 @@ macro_rules! extern_c_block {
             ///
             /// # Returns
             ///
-            /// - A negative integer if `type1` objects usually include `type2`
-            ///   objects.
-            /// - A positive integer if `type1` objects are usually included in
-            ///   `type2` objects.
+            /// - A negative integer if `type1` objects usually include `type2` objects.
+            /// - A positive integer if `type1` objects are usually included in `type2` objects.
             /// - 0 if `type1` and `type2` objects are the same.
-            /// - [`HWLOC_TYPE_UNORDERED`] if objects cannot be compared
-            ///   (because neither is usually contained in the other).
+            /// - [`HWLOC_TYPE_UNORDERED`] if objects cannot be compared (because neither is usually
+            ///   contained in the other).
             ///
             /// # Note
             ///
-            /// - Object types containing CPUs can always be compared (usually,
-            ///   a machine contains packages, which contain caches, which
-            ///   contain cores, which contain PUs).
-            /// - [`HWLOC_OBJ_PU`] will always be the deepest, while
-            ///   [`HWLOC_OBJ_MACHINE`] is always the highest.
-            /// - This does not mean that the actual topology will respect that
-            ///   order: e.g. as of today cores may also contain caches, and
-            ///   packages may also contain nodes. This is thus just to be seen
-            ///   as a fallback comparison method.
+            /// - Object types containing CPUs can always be compared (usually, a machine contains
+            ///   packages, which contain caches, which contain cores, which contain PUs).
+            /// - [`HWLOC_OBJ_PU`] will always be the deepest, while [`HWLOC_OBJ_MACHINE`] is always
+            ///   the highest.
+            /// - This does not mean that the actual topology will respect that order: e.g. as of
+            ///   today cores may also contain caches, and packages may also contain nodes. This is
+            ///   thus just to be seen as a fallback comparison method.
             #[must_use]
             pub fn hwloc_compare_types(type1: hwloc_obj_type_t, type2: hwloc_obj_type_t) -> c_int;
 
@@ -2452,13 +2443,11 @@ macro_rules! extern_c_block {
             ///
             /// # Note
             ///
-            /// - On failure, the topology is reinitialized. It should be either
-            ///   destroyed with [`hwloc_topology_destroy()`] or configured and
-            ///   loaded again.
+            /// - On failure, the topology is reinitialized. It should be either destroyed with
+            ///   [`hwloc_topology_destroy()`] or configured and loaded again.
             /// - This function may be called only once per topology.
-            /// - The binding of the current thread or process may temporarily
-            ///   change during this call but it will be restored before it
-            ///   returns.
+            /// - The binding of the current thread or process may temporarily change during this
+            ///   call but it will be restored before it returns.
             #[must_use]
             pub fn hwloc_topology_load(topology: hwloc_topology_t) -> c_int;
 
@@ -2962,8 +2951,9 @@ macro_rules! extern_c_block {
             pub fn hwloc_bitmap_only(bitmap: hwloc_bitmap_t, id: c_uint) -> c_int;
             #[must_use]
             pub fn hwloc_bitmap_allbut(bitmap: hwloc_bitmap_t, id: c_uint) -> c_int;
-            // NOTE: Not exposing ulong-based APIs for now, so no from_ulong, from_ith_ulong, from_ulongs
-            //       If I decide to add them, gate from_ulongs with #[cfg(feature = "hwloc-2_1_0")]
+            // NOTE: Not exposing ulong-based APIs for now, so no from_ulong, from_ith_ulong,
+            // from_ulongs       If I decide to add them, gate from_ulongs with #[cfg(feature =
+            // "hwloc-2_1_0")]
             #[must_use]
             pub fn hwloc_bitmap_set(bitmap: hwloc_bitmap_t, id: c_uint) -> c_int;
             #[must_use]
@@ -2982,8 +2972,9 @@ macro_rules! extern_c_block {
                 end: c_int,
             ) -> c_int;
             pub fn hwloc_bitmap_singlify(bitmap: hwloc_bitmap_t) -> c_int;
-            // NOTE: Not exposing ulong-based APIs for now, so no to_ulong, to_ith_ulong, to_ulongs and nr_ulongs
-            //       If I decide to add them, gate nr_ulongs and to_ulongs with #[cfg(feature = "hwloc-2_1_0")]
+            // NOTE: Not exposing ulong-based APIs for now, so no to_ulong, to_ith_ulong, to_ulongs
+            // and nr_ulongs       If I decide to add them, gate nr_ulongs and to_ulongs with
+            // #[cfg(feature = "hwloc-2_1_0")]
 
             #[must_use]
             pub fn hwloc_bitmap_isset(bitmap: hwloc_const_bitmap_t, id: c_uint) -> c_int;
@@ -3468,8 +3459,6 @@ extern_c_block!("hwloc");
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use static_assertions::{assert_impl_all, assert_not_impl_any};
     use std::{
         fmt::{self, Binary, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex},
         hash::Hash,
@@ -3477,6 +3466,10 @@ mod tests {
         ops::Deref,
         panic::UnwindSafe,
     };
+
+    use static_assertions::{assert_impl_all, assert_not_impl_any};
+
+    use super::*;
 
     // Opaque types implement almost no trait since the user shouldn't
     // manipulate them

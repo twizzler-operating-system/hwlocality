@@ -1,13 +1,15 @@
 use std::sync::OnceLock;
 #[cfg(feature = "vendored")]
 mod vendored_deps {
-    pub use flate2::read::GzDecoder;
-    pub use sha3::{Digest, Sha3_256};
     pub use std::{
         env,
         path::{Path, PathBuf},
     };
-    pub use tar::Archive;
+
+    //pub use flate2::read::GzDecoder;
+    //pub use sha3::{Digest, Sha3_256};
+    //pub use tar::Archive;
+    pub use sha3::Digest;
 }
 #[cfg(feature = "vendored")]
 use vendored_deps::*;
@@ -120,7 +122,7 @@ fn setup_vendored_hwloc(min_required_version: &str) {
 
     // On Windows, we build using CMake because the autotools build
     // procedure does not work with MSVC, which is often needed on this OS
-    if target_os() == "windows" {
+    if target_os() == "windows" || target_os() == "twizzler" {
         install_hwloc_cmake(source_path);
     } else {
         // On other OSes, we use autotools and pkg-config
@@ -149,6 +151,18 @@ fn hex(hex: &'static str) -> Box<[u8]> {
         .collect()
 }
 
+#[cfg(feature = "vendored")]
+fn fetch_hwloc(
+    _parent_path: impl AsRef<Path>,
+    _version: &str,
+    _sha3_digest: impl AsRef<[u8]>,
+) -> PathBuf {
+    let hwloc_path = std::env::current_dir()
+        .unwrap()
+        .join(format!("../../hwloc"));
+    hwloc_path
+}
+/*
 /// Fetch, check and extract an official hwloc tarball, return extracted path
 #[cfg(feature = "vendored")]
 fn fetch_hwloc(
@@ -204,16 +218,27 @@ fn fetch_hwloc(
     // Predict location where tarball was extracted
     extracted_path
 }
+*/
 
 /// Compile hwloc using cmake, return local installation path
 #[cfg(feature = "vendored")]
 fn install_hwloc_cmake(source_path: impl AsRef<Path>) {
     // Locate CMake support files, make sure they are present
     // (should be the case on any hwloc release since 2.8)
-    let cmake_path = source_path.as_ref().join("contrib").join("windows-cmake");
+    let path = if target_os() == "windows" {
+        "windows-cmake"
+    } else if target_os() == "twizzler" {
+        "twizzler"
+    } else {
+        panic!(
+            "cannot cmake compile hwloc for non- Windows or Twizzler OS: {}",
+            target_os()
+        );
+    };
+    let cmake_path = source_path.as_ref().join("contrib").join(path);
     assert!(
         cmake_path.join("CMakeLists.txt").exists(),
-        "Need hwloc's CMake support to build on Windows (with MSVC)"
+        "Need hwloc's CMake support to build on Windows (with MSVC), or Twizzler"
     );
 
     // Configure the CMake build
