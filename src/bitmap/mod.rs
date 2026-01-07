@@ -52,25 +52,8 @@ mod cow;
 mod newtypes;
 mod reference;
 
-<<<<<<< HEAD
-#[cfg(doc)]
-use crate::{
-    cpu::cpuset::CpuSet, memory::nodeset::NodeSet, object::TopologyObject, topology::Topology,
-};
-use crate::{
-    errors,
-    ffi::{self, PositiveInt},
-};
-use hwlocality_sys::hwloc_bitmap_s;
-#[cfg(any(test, feature = "proptest"))]
-use proptest::prelude::*;
-#[allow(unused)]
-#[cfg(test)]
-use similar_asserts::assert_eq;
 #[cfg(test)]
 use std::cell::Cell;
-=======
->>>>>>> 8751941 (Update.)
 #[cfg(any(test, feature = "proptest"))]
 use std::collections::HashSet;
 use std::{
@@ -90,10 +73,19 @@ use std::{
 use hwlocality_sys::hwloc_bitmap_s;
 #[cfg(any(test, feature = "proptest"))]
 use proptest::prelude::*;
+#[cfg(any(test, feature = "proptest"))]
+use proptest::prelude::*;
+#[allow(unused)]
+#[cfg(test)]
+use similar_asserts::assert_eq;
 #[allow(unused)]
 #[cfg(test)]
 use similar_asserts::assert_eq;
 
+#[cfg(doc)]
+use crate::{
+    cpu::cpuset::CpuSet, memory::nodeset::NodeSet, object::TopologyObject, topology::Topology,
+};
 #[cfg(doc)]
 use crate::{
     cpu::cpuset::CpuSet, memory::nodeset::NodeSet, object::TopologyObject, topology::Topology,
@@ -370,15 +362,9 @@ impl Bitmap {
         fn polymorphized(self_: &mut Bitmap, other: &Bitmap) {
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - hwloc ops are trusted not to modify *const parameters
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_copy", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_copy", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_copy", || unsafe {
                 hwlocality_sys::hwloc_bitmap_copy(self_.as_mut_ptr(), other.as_ptr())
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -456,15 +442,9 @@ impl Bitmap {
             let idx = idx.expect(BAD_INDEX);
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - idx has been checked to be in the hwloc-supported range
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_only", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_only", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_only", || unsafe {
                 hwlocality_sys::hwloc_bitmap_only(self_.as_mut_ptr(), idx.to_c_uint())
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -504,15 +484,9 @@ impl Bitmap {
             let idx = idx.expect(BAD_INDEX);
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - idx has been checked to be in the hwloc-supported range
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_allbut", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_allbut", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_allbut", || unsafe {
                 hwlocality_sys::hwloc_bitmap_allbut(self_.as_mut_ptr(), idx.to_c_uint())
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -552,15 +526,9 @@ impl Bitmap {
             let idx = idx.expect(BAD_INDEX);
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - idx has been checked to be in the hwloc-supported range
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_set", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_set", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_set", || unsafe {
                 hwlocality_sys::hwloc_bitmap_set(self_.as_mut_ptr(), idx.to_c_uint())
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -608,15 +576,9 @@ impl Bitmap {
         unsafe fn polymorphized(self_: &mut Bitmap, (begin, end): (c_uint, c_int)) {
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - Range bounds are trusted per function precondition
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_set_range", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_set_range", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_set_range", || unsafe {
                 hwlocality_sys::hwloc_bitmap_set_range(self_.as_mut_ptr(), begin, end)
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -657,15 +619,9 @@ impl Bitmap {
             let idx = idx.expect(BAD_INDEX);
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - idx has been checked to be in the hwloc-supported range
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_clr", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_clr", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_clr", || unsafe {
                 hwlocality_sys::hwloc_bitmap_clr(self_.as_mut_ptr(), idx.to_c_uint())
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -713,15 +669,9 @@ impl Bitmap {
         unsafe fn polymorphized(self_: &mut Bitmap, (begin, end): (c_uint, c_int)) {
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - Range bounds are trusted per function precondition
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_clr_range", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_clr_range", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_clr_range", || unsafe {
                 hwlocality_sys::hwloc_bitmap_clr_range(self_.as_mut_ptr(), begin, end)
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -758,15 +708,9 @@ impl Bitmap {
     #[doc(alias = "hwloc_bitmap_singlify")]
     pub fn singlify(&mut self) {
         // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
-<<<<<<< HEAD
-        //         - hwloc ops are trusted to keep *mut parameters in a
-        //           valid state unless stated otherwise
-        errors::call_hwloc_zero_or_minus1("hwloc_bitmap_singlify", || unsafe {
-=======
         //         - hwloc ops are trusted to keep *mut parameters in a valid state unless stated
         //           otherwise
-        errors::call_hwloc_int_normal("hwloc_bitmap_singlify", || unsafe {
->>>>>>> 8751941 (Update.)
+        errors::call_hwloc_zero_or_minus1("hwloc_bitmap_singlify", || unsafe {
             hwlocality_sys::hwloc_bitmap_singlify(self.as_mut_ptr())
         })
         .expect(MALLOC_FAIL_ONLY);
@@ -1037,15 +981,9 @@ impl Bitmap {
     /// ```
     pub fn invert(&mut self) {
         // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
-<<<<<<< HEAD
-        //         - hwloc ops are trusted to keep *mut parameters in a
-        //           valid state unless stated otherwise
-        errors::call_hwloc_zero_or_minus1("hwloc_bitmap_not", || unsafe {
-=======
         //         - hwloc ops are trusted to keep *mut parameters in a valid state unless stated
         //           otherwise
-        errors::call_hwloc_int_normal("hwloc_bitmap_not", || unsafe {
->>>>>>> 8751941 (Update.)
+        errors::call_hwloc_zero_or_minus1("hwloc_bitmap_not", || unsafe {
             hwlocality_sys::hwloc_bitmap_not(self.as_mut_ptr(), self.as_ptr())
         })
         .expect(MALLOC_FAIL_ONLY);
@@ -1343,15 +1281,9 @@ impl<B: Borrow<Bitmap>> BitAnd<B> for &Bitmap {
             let mut result = Bitmap::new();
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - hwloc ops are trusted not to modify *const parameters
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_and", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_and", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_and", || unsafe {
                 hwlocality_sys::hwloc_bitmap_and(result.as_mut_ptr(), self_.as_ptr(), rhs.as_ptr())
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -1376,15 +1308,9 @@ impl<B: Borrow<Self>> BitAndAssign<B> for Bitmap {
         fn polymorphized(self_: &mut Bitmap, rhs: &Bitmap) {
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - hwloc ops are trusted not to modify *const parameters
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_and", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_and", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_and", || unsafe {
                 hwlocality_sys::hwloc_bitmap_and(self_.as_mut_ptr(), self_.as_ptr(), rhs.as_ptr())
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -1403,15 +1329,9 @@ impl<B: Borrow<Bitmap>> BitOr<B> for &Bitmap {
             let mut result = Bitmap::new();
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - hwloc ops are trusted not to modify *const parameters
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_or", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_or", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_or", || unsafe {
                 hwlocality_sys::hwloc_bitmap_or(result.as_mut_ptr(), self_.as_ptr(), rhs.as_ptr())
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -1436,15 +1356,9 @@ impl<B: Borrow<Self>> BitOrAssign<B> for Bitmap {
         fn polymorphized(self_: &mut Bitmap, rhs: &Bitmap) {
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - hwloc ops are trusted not to modify *const parameters
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_or", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_or", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_or", || unsafe {
                 hwlocality_sys::hwloc_bitmap_or(self_.as_mut_ptr(), self_.as_ptr(), rhs.as_ptr())
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -1463,8 +1377,8 @@ impl<B: Borrow<Bitmap>> BitXor<B> for &Bitmap {
             let mut result = Bitmap::new();
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - hwloc ops are trusted not to modify *const parameters
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
+            //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
+            //           stated otherwise
             errors::call_hwloc_zero_or_minus1("hwloc_bitmap_xor", || unsafe {
                 hwlocality_sys::hwloc_bitmap_xor(result.as_mut_ptr(), self_.as_ptr(), rhs.as_ptr())
             })
@@ -1490,15 +1404,9 @@ impl<B: Borrow<Self>> BitXorAssign<B> for Bitmap {
         fn polymorphized(self_: &mut Bitmap, rhs: &Bitmap) {
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - hwloc ops are trusted not to modify *const parameters
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_xor", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_xor", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_xor", || unsafe {
                 hwlocality_sys::hwloc_bitmap_xor(self_.as_mut_ptr(), self_.as_ptr(), rhs.as_ptr())
             })
             .expect(MALLOC_FAIL_ONLY);
@@ -1686,15 +1594,9 @@ impl Not for &Bitmap {
         let mut result = Bitmap::new();
         // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
         //         - hwloc ops are trusted not to modify *const parameters
-<<<<<<< HEAD
-        //         - hwloc ops are trusted to keep *mut parameters in a
-        //           valid state unless stated otherwise
-        errors::call_hwloc_zero_or_minus1("hwloc_bitmap_not", || unsafe {
-=======
         //         - hwloc ops are trusted to keep *mut parameters in a valid state unless stated
         //           otherwise
-        errors::call_hwloc_int_normal("hwloc_bitmap_not", || unsafe {
->>>>>>> 8751941 (Update.)
+        errors::call_hwloc_zero_or_minus1("hwloc_bitmap_not", || unsafe {
             hwlocality_sys::hwloc_bitmap_not(result.as_mut_ptr(), self.as_ptr())
         })
         .expect(MALLOC_FAIL_ONLY);
@@ -1767,15 +1669,9 @@ impl<B: Borrow<Bitmap>> Sub<B> for &Bitmap {
             let mut result = Bitmap::new();
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - hwloc ops are trusted not to modify *const parameters
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_andnot", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_andnot", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_andnot", || unsafe {
                 hwlocality_sys::hwloc_bitmap_andnot(
                     result.as_mut_ptr(),
                     self_.as_ptr(),
@@ -1804,15 +1700,9 @@ impl<B: Borrow<Self>> SubAssign<B> for Bitmap {
         fn polymorphized(self_: &mut Bitmap, rhs: &Bitmap) {
             // SAFETY: - Bitmaps are trusted to contain a valid ptr (type invariant)
             //         - hwloc ops are trusted not to modify *const parameters
-<<<<<<< HEAD
-            //         - hwloc ops are trusted to keep *mut parameters in a
-            //           valid state unless stated otherwise
-            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_andnot", || unsafe {
-=======
             //         - hwloc ops are trusted to keep *mut parameters in a valid state unless
             //           stated otherwise
-            errors::call_hwloc_int_normal("hwloc_bitmap_andnot", || unsafe {
->>>>>>> 8751941 (Update.)
+            errors::call_hwloc_zero_or_minus1("hwloc_bitmap_andnot", || unsafe {
                 hwlocality_sys::hwloc_bitmap_andnot(
                     self_.as_mut_ptr(),
                     self_.as_ptr(),
